@@ -16,7 +16,7 @@ public abstract class JarReader {
     private final ClassPool pool;
     private List<String> classes;
 
-    public JarReader(File jar) throws NotFoundException, IOException {
+    public JarReader(File jar, String filter) throws NotFoundException, IOException {
         this.pool = new ClassPool(true);
         this.pool.insertClassPath(jar.getAbsolutePath());
 
@@ -29,7 +29,10 @@ public abstract class JarReader {
         while (iterator.hasMoreElements()) {
             JarEntry file = iterator.nextElement();
             if (file.getName().endsWith(".class")) {
-                classes.add(file.getName().replace("/", ".").replace(".class", ""));
+                String name = file.getName().replace("/", ".").replace(".class", "");
+                if(!filter.equals("*") && !name.startsWith(filter))
+                    continue;
+                classes.add(name);
             }
         }
     }

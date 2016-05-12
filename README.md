@@ -7,7 +7,8 @@ This project is very much in development, hopefully one day it will be the most 
 
 Usage:
 
-    java -jar proto.jar <jarfile>
+    java -jar proto.jar <jarfile> <outputfile> <filter>
+By default the filter is *, if you only want net.minecraft, use net.minecraft.
 
 Where jarfile is the file you want to extract data from, for now it saves to output.json.
 

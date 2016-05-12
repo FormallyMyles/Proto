@@ -13,8 +13,8 @@ import java.util.List;
 public class JarAnalyser extends JarReader {
     private List<AnalysedClass> analysedClassList = new ArrayList<AnalysedClass>();
 
-    public JarAnalyser(File jar) throws NotFoundException, IOException {
-        super(jar);
+    public JarAnalyser(File jar, String filter) throws NotFoundException, IOException {
+        super(jar, filter);
     }
 
     protected void visit(CtClass ctClass) {
