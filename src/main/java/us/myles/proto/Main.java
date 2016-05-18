@@ -48,14 +48,7 @@ public class Main {
             });
             for (MappedClass m : mapped) {
                 if (m.getOldName().contains("$")) {
-                    if (!Character.isDigit(m.getOldName().replace(".", "/").split("\\$")[1].charAt(0))) {
-//                        if(last != null){
-//                            if(!last.getOldName().equals(m.getOldName().replace(".", "/").split("\\$")[0])){
-//
-//                            }
-//                        }
-                        pw.println("\tCLASS none/" + m.getNewName().replace(".", "/") + " " + m.getOldName().replace(".", "/").split("\\$")[1]);
-                    }
+                    pw.println("\tCLASS none/" + m.getNewName().replace(".", "/") + " " + m.getOldName().replace(".", "/").split("\\$")[1]);
                 } else {
                     pw.println("CLASS none/" + m.getNewName().replace(".", "/") + " " + m.getOldName().replace(".", "/"));
                 }
