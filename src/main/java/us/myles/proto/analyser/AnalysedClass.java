@@ -13,6 +13,10 @@ public class AnalysedClass {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public List<String> getConstants() {
         return constants;
     }
