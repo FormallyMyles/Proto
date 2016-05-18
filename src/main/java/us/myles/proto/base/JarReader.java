@@ -30,7 +30,10 @@ public abstract class JarReader {
             JarEntry file = iterator.nextElement();
             if (file.getName().endsWith(".class")) {
                 String name = file.getName().replace("/", ".").replace(".class", "");
-                if(!filter.equals("*") && !name.startsWith(filter))
+                if (filter.equals(".") && name.contains(".")) {
+                    continue;
+                }
+                if (filter.equals("*") && !name.startsWith(filter))
                     continue;
                 classes.add(name);
             }
