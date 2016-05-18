@@ -63,34 +63,34 @@ public class JarAnalyser extends JarReader {
                         case Opcode.SIPUSH:
                             analysedClass.getIntegerConstants().add(iter.s16bitAt(index + 1)); // maybe handle differently in future
                             break;
-                        case Opcode.DCONST_0:
-                            // 0.0
-                            analysedClass.getDoubleConstants().add(0D);
-                            break;
-                        case Opcode.DCONST_1:
-                            // 1.0
-                            analysedClass.getDoubleConstants().add(1D);
-                            break;
-                        case Opcode.FCONST_0:
-                            // 0.0f
-                            analysedClass.getFloatConstants().add(0f);
-                            break;
-                        case Opcode.FCONST_1:
-                            // 1.0f
-                            analysedClass.getFloatConstants().add(1f);
-                            break;
-                        case Opcode.FCONST_2:
-                            // 2.0f
-                            analysedClass.getFloatConstants().add(2f);
-                            break;
-                        case Opcode.LCONST_0:
-                            // 0L
-                            analysedClass.getLongConstants().add(0L);
-                            break;
-                        case Opcode.LCONST_1:
-                            // 1L
-                            analysedClass.getLongConstants().add(1L);
-                            break;
+//                        case Opcode.DCONST_0:
+//                            // 0.0
+//                            analysedClass.getDoubleConstants().add(0D);
+//                            break;
+//                        case Opcode.DCONST_1:
+//                            // 1.0
+//                            analysedClass.getDoubleConstants().add(1D);
+//                            break;
+//                        case Opcode.FCONST_0:
+//                            // 0.0f
+//                            analysedClass.getFloatConstants().add(0f);
+//                            break;
+//                        case Opcode.FCONST_1:
+//                            // 1.0f
+//                            analysedClass.getFloatConstants().add(1f);
+//                            break;
+//                        case Opcode.FCONST_2:
+//                            // 2.0f
+//                            analysedClass.getFloatConstants().add(2f);
+//                            break;
+//                        case Opcode.LCONST_0:
+//                            // 0L
+//                            analysedClass.getLongConstants().add(0L);
+//                            break;
+//                        case Opcode.LCONST_1:
+//                            // 1L
+//                            analysedClass.getLongConstants().add(1L);
+//                            break;
                     }
                 } catch (BadBytecode badBytecode) {
                     badBytecode.printStackTrace();
