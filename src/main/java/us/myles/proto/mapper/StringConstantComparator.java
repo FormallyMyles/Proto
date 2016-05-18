@@ -6,6 +6,6 @@ public class StringConstantComparator implements java.util.Comparator<AnalysedCl
 
     @Override
     public int compare(AnalysedClass o1, AnalysedClass o2) {
-        return o2.getConstants().size() - o1.getConstants().size();
+        return o2.getStringConstants().size() - o1.getStringConstants().size();
     }
 }

@@ -33,8 +33,9 @@ public abstract class JarReader {
                 if (filter.equals(".") && name.contains(".")) {
                     continue;
                 }
-                if (filter.equals("*") && !name.startsWith(filter))
+                if (!filter.equals("*") && !filter.equals(".") && !name.startsWith(filter)) {
                     continue;
+                }
                 classes.add(name);
             }
         }

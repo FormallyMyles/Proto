@@ -59,7 +59,7 @@ public class Main {
             // Note: This is more a debug thing, not actual but hey!
             JarAnalyser ja = new JarAnalyser(new File(input), filter);
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = new GsonBuilder().setPrettyPrinting().serializeSpecialFloatingPointValues().create();
             FileWriter fw = new FileWriter(new File(output));
             gson.toJson(ja.analyse(), fw);
             fw.close();
