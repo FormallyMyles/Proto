@@ -76,16 +76,24 @@ public class MappingGenerator {
             }
         }
         // Don't use inner classes on the first 2 stages
-        if(stage < 2){
+        if (stage < 2) {
             if (old.getName().contains("$")) {
                 return false;
             }
         }
         // Prevent some false positives by checking parent of inner classes
-        if(old.getName().contains("$")){
-            if(oldToNew.containsKey(old.getName().split("\\$")[0])){
+        if (old.getName().contains("$")) {
+            if (oldToNew.containsKey(old.getName().split("\\$")[0])) {
                 String newP = oldToNew.get(old.getName().split("\\$")[0]);
-                if(!newP.split("\\$")[0].equals(newC.getName().split("\\$")[0]))
+                if (!newP.split("\\$")[0].equals(newC.getName().split("\\$")[0]))
+                    return false;
+            }
+        }
+        // Prevent some false positions by checking the super of classes
+        if (!old.getSuperclass().equals("java.lang.Object")) {
+            if (oldToNew.containsKey(old.getSuperclass())) {
+                String newP = oldToNew.get(old.getSuperclass());
+                if (!newP.equals(newC.getSuperclass()))
                     return false;
             }
         }
@@ -101,58 +109,64 @@ public class MappingGenerator {
             }
         }
         // If the super class is mapped
-        if (oldToNew.containsKey(old.getSuperclass()) && !old.getName().contains("$")) {
-            String newSuper = oldToNew.get(old.getSuperclass());
-            // If the older super only has 1 child
-            if (oldChildCount.containsKey(old.getSuperclass())) {
-                if (oldChildCount.get(old.getSuperclass()) == 1) {
-                    if (newSuper.equals(newC.getSuperclass())) {
-                        System.out.println("Matched using 1 child " + old.getName() + " to " + newC.getName());
-                        return true;
-                    }
-                }
-            }
-        }
+//        if (oldToNew.containsKey(old.getSuperclass()) && !old.getName().contains("$")) {
+//            String newSuper = oldToNew.get(old.getSuperclass());
+//            // If the older super only has 1 child
+//            if (oldChildCount.containsKey(old.getSuperclass())) {
+//                if (oldChildCount.get(old.getSuperclass()) == 1) {
+//                    if (newSuper.equals(newC.getSuperclass())) {
+//                        System.out.println("Matched using 1 child " + old.getName() + " to " + newC.getName());
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
 
         // Don't match inner classes to outer.
         if (old.getName().contains("$") && !newC.getName().contains("$") || !old.getName().contains("$") && newC.getName().contains("$"))
             return false;
 
-        int threshold = 80;
+        int threshold = 92;
+        if(stage == 0)
+            threshold = 98;
+        if(stage == 1)
+            threshold = 95;
+        if(stage == 5)
+            threshold = 85;
 
         // Stage 1: Identify info based on the constants
-        if (stage == 0 || stage == 4) {
-            int stringMatches = 0;
-            for (String s : old.getStringConstants()) {
-                if (newC.getStringConstants().contains(s)) {
-                    stringMatches++;
+        int stringMatches = 0;
+        for (String s : old.getStringConstants()) {
+            if (newC.getStringConstants().contains(s)) {
+                stringMatches++;
+            }
+        }
+        int total = old.getStringConstants().size() + old.getFloatConstants().size() + old.getLongConstants().size() + old.getDoubleConstants().size() + old.getIntegerConstants().size();
+        int totalNew = newC.getStringConstants().size() + newC.getFloatConstants().size() + newC.getLongConstants().size() + newC.getDoubleConstants().size() + newC.getIntegerConstants().size();
+        if (within(total, totalNew)) {
+            if (old.getStringConstants().size() > (stage > 0 ? 0 : 1)) {
+                double percentage = ((double) stringMatches / (double) old.getStringConstants().size()) * 100D;
+                if (percentage > threshold) {
+                    if (old.getName().contains("$")) {
+                        // Mapped inner class
+                        savedMappings.put(old.getName().split("\\$")[0], newC.getName().split("\\$")[0]);
+                    }
+                    // Save parent classes
+                    if (!old.getSuperclass().equals("java.lang.Object")) {
+                        savedMappings.put(old.getSuperclass(), newC.getSuperclass());
+                    }
+                    if (old.getInterfaces().size() == newC.getInterfaces().size()) {
+                        int x = 0;
+                        for (String s : old.getInterfaces()) {
+                            savedMappings.put(s, newC.getInterfaces().get(x));
+                            x++;
+                        }
+                    }
+                    System.out.println("Matched " + old.getName() + " to " + newC.getName() + " " + percentage + "% " + total + " n: " + totalNew);
+                    return true;
                 }
             }
-            int total = old.getStringConstants().size() + old.getFloatConstants().size() + old.getLongConstants().size() + old.getDoubleConstants().size() + old.getIntegerConstants().size();
-            int totalNew = newC.getStringConstants().size() + newC.getFloatConstants().size() + newC.getLongConstants().size() + newC.getDoubleConstants().size() + newC.getIntegerConstants().size();
-            if (within(total, totalNew)) {
-                if (old.getStringConstants().size() > 1) {
-                    double percentage = ((double) stringMatches / (double) old.getStringConstants().size()) * 100D;
-                    if (percentage > threshold) {
-                        if (old.getName().contains("$")) {
-                            // Mapped inner class
-                            savedMappings.put(old.getName().split("\\$")[0], newC.getName().split("\\$")[0]);
-                        }
-                        // Save parent classes
-                        if (!old.getSuperclass().equals("java.lang.Object")) {
-                            savedMappings.put(old.getSuperclass(), newC.getSuperclass());
-                        }
-                        if (old.getInterfaces().size() == newC.getInterfaces().size()) {
-                            int x = 0;
-                            for (String s : old.getInterfaces()) {
-                                savedMappings.put(s, newC.getInterfaces().get(x));
-                                x++;
-                            }
-                        }
-                        System.out.println("Matched " + old.getName() + " to " + newC.getName() + " " + percentage + "% " + total + " n: " + totalNew);
-                        return true;
-                    }
-                }
+            if (stage > 0) {
                 int longMatches = 0;
                 for (Long s : old.getLongConstants()) {
                     if (newC.getLongConstants().contains(s)) {
@@ -294,14 +308,14 @@ public class MappingGenerator {
                     }
                 }
             }
-
         }
+
         return false;
     }
 
     private boolean within(int total, int totalNew) {
         double diff = Math.abs(total - totalNew);
         double fract = diff / (double) totalNew;
-        return fract <= 0.30D;
+        return fract <= 0.1D;
     }
 }
