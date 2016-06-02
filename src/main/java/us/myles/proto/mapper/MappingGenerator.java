@@ -126,12 +126,14 @@ public class MappingGenerator {
         if (old.getName().contains("$") && !newC.getName().contains("$") || !old.getName().contains("$") && newC.getName().contains("$"))
             return false;
 
+        double normalBounds = 0.1D;
+        double stringBounds = 0.4D;
         int threshold = 92;
-        if(stage == 0)
+        if (stage == 0)
             threshold = 98;
-        if(stage == 1)
+        if (stage == 1)
             threshold = 95;
-        if(stage == 5)
+        if (stage == 5)
             threshold = 85;
 
         // Stage 1: Identify info based on the constants
@@ -143,7 +145,7 @@ public class MappingGenerator {
         }
         int total = old.getStringConstants().size() + old.getFloatConstants().size() + old.getLongConstants().size() + old.getDoubleConstants().size() + old.getIntegerConstants().size();
         int totalNew = newC.getStringConstants().size() + newC.getFloatConstants().size() + newC.getLongConstants().size() + newC.getDoubleConstants().size() + newC.getIntegerConstants().size();
-        if (within(total, totalNew)) {
+        if (within(total, totalNew, stringBounds)) {
             if (old.getStringConstants().size() > (stage > 0 ? 0 : 1)) {
                 double percentage = ((double) stringMatches / (double) old.getStringConstants().size()) * 100D;
                 if (percentage > threshold) {
@@ -166,6 +168,8 @@ public class MappingGenerator {
                     return true;
                 }
             }
+        }
+        if (within(total, totalNew, normalBounds)) {
             if (stage > 0) {
                 int longMatches = 0;
                 for (Long s : old.getLongConstants()) {
@@ -313,9 +317,9 @@ public class MappingGenerator {
         return false;
     }
 
-    private boolean within(int total, int totalNew) {
+    private boolean within(int total, int totalNew, double bounds) {
         double diff = Math.abs(total - totalNew);
         double fract = diff / (double) totalNew;
-        return fract <= 0.1D;
+        return fract <= bounds;
     }
 }
